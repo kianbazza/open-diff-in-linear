@@ -1,3 +1,4 @@
+import { browser } from "#imports";
 import type { Message, MessageResponses } from "./messages";
 import {
   consumeSkip,
@@ -10,6 +11,9 @@ import {
 export async function handleMessage(
   message: Message,
   senderTabId: number | undefined,
+  closeTab: (tabId: number) => Promise<void> = async (id) => {
+    await browser.tabs.remove(id);
+  },
 ): Promise<MessageResponses[Message["type"]]> {
   switch (message.type) {
     case "mark-skip":
@@ -24,5 +28,8 @@ export async function handleMessage(
       return undefined;
     case "was-recently-handed-off":
       return wasRecentlyHandedOff(message.prKey);
+    case "close-tab":
+      if (senderTabId !== undefined) await closeTab(senderTabId);
+      return undefined;
   }
 }

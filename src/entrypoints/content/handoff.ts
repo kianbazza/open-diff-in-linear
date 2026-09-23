@@ -13,11 +13,13 @@ export async function handoff(
   page: PrPage,
   target: OpenTarget,
   kind: HandoffKind,
+  options: { beforeOpen?: () => void } = {},
 ): Promise<void> {
   const recorded = sendMessage(
     { type: "record-handoff", prKey: prKey(page) },
     undefined,
   );
   if (kind === "automatic") await recorded;
+  options.beforeOpen?.();
   openLinearUrl(linearUrl(page, target), kind);
 }
