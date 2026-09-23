@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { createShadowRootUi, defineContentScript } from "#imports";
 import { App } from "./App";
 import { startPageController } from "./controller";
+import { startGithubTab } from "./github-tab";
 import { createPageStore } from "./store";
 
 export default defineContentScript({
@@ -15,6 +16,7 @@ export default defineContentScript({
   async main(ctx) {
     const store = createPageStore();
     startPageController(ctx, store);
+    startGithubTab(ctx, store);
 
     const ui = await createShadowRootUi(ctx, {
       name: "open-diff-in-linear",
