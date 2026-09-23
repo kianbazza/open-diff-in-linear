@@ -10,6 +10,7 @@ describe("createPageStore", () => {
       settings: DEFAULT_SETTINGS,
       settingsLoaded: false,
       flipHeld: false,
+      toast: null,
     });
   });
 
