@@ -1,7 +1,7 @@
 import type { ContentScriptContext } from "#imports";
 import { linearUrl } from "@/lib/linear-url";
-import { openLinearUrl } from "@/lib/navigate";
 import { pillPresentation } from "@/lib/pill";
+import { handoff } from "./handoff";
 import type { PageStore } from "./store";
 
 export const GITHUB_TAB_ID = "odil-view-in-linear-tab";
@@ -124,11 +124,9 @@ export function startGithubTab(
     options.beforeHandoff?.();
     const { page, settings } = store.get();
     if (page === null) return;
-    openLinearUrl(
-      linearUrl(
-        page,
-        pillPresentation(settings.openTarget, event.altKey).target,
-      ),
+    void handoff(
+      page,
+      pillPresentation(settings.openTarget, event.altKey).target,
       "click",
     );
   }

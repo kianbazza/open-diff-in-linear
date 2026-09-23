@@ -1,7 +1,6 @@
 import { useSyncExternalStore } from "react";
-import { linearUrl } from "@/lib/linear-url";
-import { openLinearUrl } from "@/lib/navigate";
 import { pillPresentation } from "@/lib/pill";
+import { handoff } from "./handoff";
 import type { PageStore } from "./store";
 
 export function App({
@@ -35,6 +34,15 @@ export function App({
       </div>
     );
 
+  if (state.toast?.kind === "notice")
+    return (
+      <div className="odil-toast" role="status" aria-live="polite">
+        <div className="odil-toast-row">
+          <span className="odil-toast-title">{state.toast.text}</span>
+        </div>
+      </div>
+    );
+
   const label = pillPresentation(
     state.settings.openTarget,
     state.flipHeld,
@@ -46,12 +54,13 @@ export function App({
       aria-label={label}
       title={label}
       onClick={(event) => {
+        onStay();
         event.preventDefault();
         const { target } = pillPresentation(
           state.settings.openTarget,
           event.altKey,
         );
-        openLinearUrl(linearUrl(page, target), "click");
+        void handoff(page, target, "click");
       }}
     >
       {label}

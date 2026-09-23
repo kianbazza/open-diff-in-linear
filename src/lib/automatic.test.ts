@@ -24,6 +24,8 @@ describe("decideArrival", () => {
         page,
         settings: { ...automatic, mode: "manual" },
         cancelled: false,
+        skipRequested: false,
+        recentlyHandedOff: false,
       }),
     ).toEqual({ kind: "none", reason: "manual-mode" }));
   it("rejects an owner not on the allowlist", () =>
@@ -32,6 +34,8 @@ describe("decideArrival", () => {
         page,
         settings: { ...automatic, allowlist: [] },
         cancelled: false,
+        skipRequested: false,
+        recentlyHandedOff: false,
       }),
     ).toEqual({ kind: "none", reason: "not-allowlisted" }));
   it("rejects other views", () =>
@@ -40,15 +44,29 @@ describe("decideArrival", () => {
         page: { ...page, view: "other" },
         settings: automatic,
         cancelled: false,
+        skipRequested: false,
+        recentlyHandedOff: false,
       }),
     ).toEqual({ kind: "none", reason: "view-not-handed-off" }));
   it("rejects a cancelled PR", () =>
     expect(
-      decideArrival({ page, settings: automatic, cancelled: true }),
+      decideArrival({
+        page,
+        settings: automatic,
+        cancelled: true,
+        skipRequested: false,
+        recentlyHandedOff: false,
+      }),
     ).toEqual({ kind: "none", reason: "cancelled" }));
   it("starts a countdown on overview", () =>
     expect(
-      decideArrival({ page, settings: automatic, cancelled: false }),
+      decideArrival({
+        page,
+        settings: automatic,
+        cancelled: false,
+        skipRequested: false,
+        recentlyHandedOff: false,
+      }),
     ).toEqual({ kind: "countdown", seconds: automatic.countdownSeconds }));
   it("starts a countdown on changes", () =>
     expect(
@@ -56,6 +74,8 @@ describe("decideArrival", () => {
         page: { ...page, view: "changes" },
         settings: automatic,
         cancelled: false,
+        skipRequested: false,
+        recentlyHandedOff: false,
       }),
     ).toEqual({ kind: "countdown", seconds: automatic.countdownSeconds }));
   it("allows Graphite pages", () =>
@@ -64,6 +84,8 @@ describe("decideArrival", () => {
         page: { ...page, host: "graphite" },
         settings: automatic,
         cancelled: false,
+        skipRequested: false,
+        recentlyHandedOff: false,
       }),
     ).toEqual({ kind: "countdown", seconds: automatic.countdownSeconds }));
   it("matches allowlist case-insensitively", () =>
@@ -72,8 +94,60 @@ describe("decideArrival", () => {
         page: { ...page, owner: "ACME" },
         settings: automatic,
         cancelled: false,
+        skipRequested: false,
+        recentlyHandedOff: false,
       }).kind,
     ).toBe("countdown"));
+  it("uses flip-modifier for requested skips", () =>
+    expect(
+      decideArrival({
+        page,
+        settings: automatic,
+        cancelled: false,
+        skipRequested: true,
+        recentlyHandedOff: false,
+      }),
+    ).toEqual({ kind: "none", reason: "flip-modifier" }));
+  it("uses the loop breaker for recent handoffs", () =>
+    expect(
+      decideArrival({
+        page,
+        settings: automatic,
+        cancelled: false,
+        skipRequested: false,
+        recentlyHandedOff: true,
+      }),
+    ).toEqual({ kind: "loop-breaker" }));
+  it("prioritizes a requested skip over the loop breaker", () =>
+    expect(
+      decideArrival({
+        page,
+        settings: automatic,
+        cancelled: false,
+        skipRequested: true,
+        recentlyHandedOff: true,
+      }),
+    ).toEqual({ kind: "none", reason: "flip-modifier" }));
+  it("prioritizes manual mode over a requested skip", () =>
+    expect(
+      decideArrival({
+        page,
+        settings: { ...automatic, mode: "manual" },
+        cancelled: false,
+        skipRequested: true,
+        recentlyHandedOff: false,
+      }),
+    ).toEqual({ kind: "none", reason: "manual-mode" }));
+  it("prioritizes the view over recent handoffs", () =>
+    expect(
+      decideArrival({
+        page: { ...page, view: "other" },
+        settings: automatic,
+        cancelled: false,
+        skipRequested: false,
+        recentlyHandedOff: true,
+      }),
+    ).toEqual({ kind: "none", reason: "view-not-handed-off" }));
 });
 
 describe("arrivalKey", () => {

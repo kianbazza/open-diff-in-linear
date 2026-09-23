@@ -9,6 +9,12 @@ export interface CountdownToast {
   durationMs: number;
 }
 
+export interface NoticeToast {
+  kind: "notice";
+  text: string;
+  startedAt: number;
+}
+
 export interface PageState {
   /** The committed `window.location.href` the state was computed from. Not an arrival identity (hash and query changes update it); see `arrivalKey`. */
   href: string;
@@ -19,8 +25,8 @@ export interface PageState {
   settingsLoaded: boolean;
   /** Whether the flip modifier (⌥) is currently held. */
   flipHeld: boolean;
-  /** The countdown toast currently shown, or null when the floating pill is shown instead. */
-  toast: CountdownToast | null;
+  /** The toast currently shown, or null when the floating pill is shown instead. */
+  toast: CountdownToast | NoticeToast | null;
 }
 
 export interface PageStore {

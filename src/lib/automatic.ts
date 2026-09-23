@@ -7,13 +7,15 @@ import {
 
 export type ArrivalDecision =
   | { kind: "countdown"; seconds: CountdownSeconds }
+  | { kind: "loop-breaker" }
   | {
       kind: "none";
       reason:
         | "manual-mode"
         | "not-allowlisted"
         | "view-not-handed-off"
-        | "cancelled";
+        | "cancelled"
+        | "flip-modifier";
     };
 
 export interface ArrivalInput {
@@ -21,6 +23,8 @@ export interface ArrivalInput {
   settings: Settings;
   /** Sticky cancellation already recorded for this PR in this tab. */
   cancelled: boolean;
+  skipRequested: boolean;
+  recentlyHandedOff: boolean;
 }
 
 /**
@@ -41,5 +45,7 @@ export function decideArrival(input: ArrivalInput): ArrivalDecision {
   if (input.page.view !== "overview" && input.page.view !== "changes")
     return { kind: "none", reason: "view-not-handed-off" };
   if (input.cancelled) return { kind: "none", reason: "cancelled" };
+  if (input.skipRequested) return { kind: "none", reason: "flip-modifier" };
+  if (input.recentlyHandedOff) return { kind: "loop-breaker" };
   return { kind: "countdown", seconds: input.settings.countdownSeconds };
 }
