@@ -11,6 +11,7 @@ describe("createPageStore", () => {
       settingsLoaded: false,
       flipHeld: false,
       toast: null,
+      cornerBottom: 16,
     });
   });
 
