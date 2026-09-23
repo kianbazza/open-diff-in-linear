@@ -13,6 +13,7 @@ export const GITHUB_TAB_ID = "odil-view-in-linear-tab";
 export function startGithubTab(
   ctx: ContentScriptContext,
   store: PageStore,
+  options: { beforeHandoff?: () => void } = {},
 ): void {
   function findTabTemplate(doc: Document): HTMLAnchorElement | null {
     const nav = doc.querySelector('nav[aria-label="Pull request navigation"]');
@@ -120,6 +121,7 @@ export function startGithubTab(
       return;
     event.preventDefault();
     event.stopPropagation();
+    options.beforeHandoff?.();
     const { page, settings } = store.get();
     if (page === null) return;
     openLinearUrl(
