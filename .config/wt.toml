@@ -1,0 +1,20 @@
+# Worktrunk project config for Open Diff in Linear.
+# Docs: https://worktrunk.dev/config/ and https://worktrunk.dev/hook/
+
+# Run once when a new worktree is created. These block until complete so any
+# editor or agent launched with `wt switch -x` sees local env files and deps.
+# copy_ignored copies gitignored files whitelisted in the root .worktreeinclude
+# (env files and the Linear API key only); bun install covers dependencies.
+[pre-start]
+copy_ignored = "wt step copy-ignored"
+install = "bun install"
+
+# Extra excludes applied after the .worktreeinclude whitelist (belt-and-braces):
+# WXT build output and generated types reference the source worktree's paths.
+[step.copy-ignored]
+exclude = [
+  ".output/",
+  ".wxt/",
+  ".DS_Store",
+  "tsconfig.tsbuildinfo",
+]

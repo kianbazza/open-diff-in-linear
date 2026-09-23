@@ -1,0 +1,24 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "external_directory": {
+      "~/repos/kianbazza/open-diff-in-linear.*": "allow",
+      "~/repos/kianbazza/open-diff-in-linear.*/**": "allow"
+    }
+  },
+  "mcp": {
+    // Override the globally-defined Linear MCP (~/.config/opencode/opencode.jsonc)
+    // with this repo's own API key (scoped to the Personal team). The desktop app
+    // resolves {env:...} once, app-wide, so per-repo keys must come from a file
+    // reference instead.
+    "linear": {
+      "type": "remote",
+      "url": "https://mcp.linear.app/mcp",
+      "oauth": false,
+      "headers": {
+        "Authorization": "Bearer {file:./.linear-api-key}"
+      },
+      "enabled": true
+    }
+  }
+}

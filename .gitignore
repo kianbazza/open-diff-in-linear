@@ -1,0 +1,20 @@
+# Dependencies
+node_modules
+
+# Local env files and secrets
+.env
+.env.local
+.env.*.local
+.linear-api-key
+
+# WXT
+.output/
+.wxt/
+web-ext.config.ts
+
+# Testing
+coverage
+
+# Misc
+.DS_Store
+*.log
