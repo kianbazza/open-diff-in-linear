@@ -6,6 +6,7 @@ import { startAutomaticMode } from "./automatic";
 import { startPageController } from "./controller";
 import { startCornerOffset } from "./corner";
 import { startGithubTab } from "./github-tab";
+import { startPageTheme } from "./page-theme";
 import { createPageStore } from "./store";
 
 export default defineContentScript({
@@ -21,6 +22,7 @@ export default defineContentScript({
     const automatic = startAutomaticMode(ctx, store);
     startGithubTab(ctx, store, { beforeHandoff: automatic.cancel });
     startCornerOffset(ctx, store);
+    startPageTheme(ctx, store);
 
     const ui = await createShadowRootUi(ctx, {
       name: "open-diff-in-linear",

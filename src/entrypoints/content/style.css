@@ -1,3 +1,16 @@
+.odil-pill,
+.odil-toast {
+  --odil-bg: #222326;
+  --odil-fg: #f4f5f8;
+  --odil-edge: rgb(244 245 248 / 0.14);
+}
+.odil-pill[data-surface="light"],
+.odil-toast[data-surface="light"] {
+  --odil-bg: #f4f5f8;
+  --odil-fg: #222326;
+  --odil-edge: rgb(34 35 38 / 0.14);
+}
+
 .odil-pill {
   position: fixed;
   left: 16px;
@@ -7,11 +20,11 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 14px;
-  border: 0;
+  padding: 7px 13px;
+  border: 1px solid var(--odil-edge);
   border-radius: 999px;
-  background: #5e6ad2;
-  color: #fff;
+  background: var(--odil-bg);
+  color: var(--odil-fg);
   font:
     500 12px / 1 system-ui,
     -apple-system,
@@ -22,12 +35,15 @@
 }
 
 .odil-pill:hover {
-  background: #4f5bc7;
+  background: color-mix(in srgb, var(--odil-bg) 88%, var(--odil-fg));
 }
 
 .odil-pill:focus-visible {
-  outline: 2px solid #fff;
+  outline: 2px solid var(--odil-fg);
   outline-offset: 2px;
+}
+.odil-pill-logo {
+  flex-shrink: 0;
 }
 .odil-toast {
   position: fixed;
@@ -38,8 +54,9 @@
   min-width: 260px;
   padding: 10px 12px;
   border-radius: 10px;
-  background: #1f2023;
-  color: #fff;
+  border: 1px solid var(--odil-edge);
+  background: var(--odil-bg);
+  color: var(--odil-fg);
   font:
     400 12px / 1.4 system-ui,
     -apple-system,
@@ -61,7 +78,7 @@
 .odil-toast-stay {
   margin-left: auto;
   padding: 4px 8px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid color-mix(in srgb, var(--odil-fg) 30%, transparent);
   border-radius: 6px;
   background: transparent;
   color: inherit;
@@ -69,18 +86,18 @@
   cursor: pointer;
 }
 .odil-toast-stay:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--odil-fg) 10%, transparent);
 }
 .odil-toast-bar {
   margin-top: 8px;
   height: 3px;
   border-radius: 2px;
-  background: rgba(255, 255, 255, 0.15);
+  background: color-mix(in srgb, var(--odil-fg) 15%, transparent);
   overflow: hidden;
 }
 .odil-toast-fill {
   height: 100%;
-  background: #5e6ad2;
+  background: color-mix(in srgb, var(--odil-fg) 70%, transparent);
   transform-origin: left;
   animation: odil-drain linear forwards;
 }

@@ -1,3 +1,4 @@
+import type { PageTheme } from "@/lib/page-theme";
 import type { PrPage } from "@/lib/pr-page";
 import { DEFAULT_SETTINGS, type Settings } from "@/lib/settings";
 
@@ -16,6 +17,8 @@ export interface NoticeToast {
 }
 
 export interface PageState {
+  /** The page's own light/dark theme; our UI uses the opposite. */
+  pageTheme: PageTheme;
   /** The committed `window.location.href` the state was computed from. Not an arrival identity (hash and query changes update it); see `arrivalKey`. */
   href: string;
   /** The PR page currently shown, or null on any other page. */
@@ -39,6 +42,7 @@ export interface PageStore {
 
 export function createPageStore(initial: Partial<PageState> = {}): PageStore {
   let state: PageState = {
+    pageTheme: "light",
     href: "",
     page: null,
     settings: DEFAULT_SETTINGS,
