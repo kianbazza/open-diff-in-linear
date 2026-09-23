@@ -1,7 +1,8 @@
+import { ChevronsUpDownIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Select } from "@/components/ui/select";
 import {
   COUNTDOWN_OPTIONS,
-  type CountdownSeconds,
   isOpenTarget,
   OPEN_TARGETS,
   parseAllowlist,
@@ -79,6 +80,9 @@ export function App() {
     web: "Web app",
   };
 
+  const triggerClassName =
+    "inline-flex h-8 w-full items-center justify-between gap-2 rounded-md border bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50";
+
   return (
     <main
       style={{
@@ -138,47 +142,84 @@ export function App() {
             <label htmlFor="open-target" style={{ fontWeight: 600 }}>
               Open in
             </label>
-            <select
-              id="open-target"
+            <Select.Root
               value={settings.openTarget}
-              onChange={(event) => {
-                const value = event.target.value;
-                if (isOpenTarget(value)) {
+              onValueChange={(value) => {
+                if (isOpenTarget(value))
                   void save({ ...settings, openTarget: value });
-                }
               }}
+              itemToStringLabel={(value) =>
+                isOpenTarget(value) ? openTargetLabels[value] : ""
+              }
             >
-              {OPEN_TARGETS.map((target) => (
-                <option key={target} value={target}>
-                  {openTargetLabels[target]}
-                </option>
-              ))}
-            </select>
+              <Select.Trigger
+                id="open-target"
+                data-slot="select-trigger"
+                className={triggerClassName}
+              >
+                <Select.Value />
+                <ChevronsUpDownIcon className="size-4 shrink-0 text-muted-foreground" />
+              </Select.Trigger>
+              <Select.Portal>
+                <Select.Positioner>
+                  <Select.Popup data-slot="select-popup">
+                    <Select.Surface>
+                      <Select.List>
+                        {OPEN_TARGETS.map((target) => (
+                          <Select.Item key={target} value={target}>
+                            {openTargetLabels[target]}
+                            <Select.ItemIndicator />
+                          </Select.Item>
+                        ))}
+                      </Select.List>
+                    </Select.Surface>
+                  </Select.Popup>
+                </Select.Positioner>
+              </Select.Portal>
+            </Select.Root>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
             <label htmlFor="countdown" style={{ fontWeight: 600 }}>
               Countdown
             </label>
-            <select
-              id="countdown"
+            <Select.Root
               value={settings.countdownSeconds}
               disabled={settings.mode === "manual"}
-              onChange={(event) =>
-                void save({
-                  ...settings,
-                  countdownSeconds: Number(
-                    event.target.value,
-                  ) as CountdownSeconds,
-                })
-              }
+              onValueChange={(value) => {
+                const seconds = COUNTDOWN_OPTIONS.find(
+                  (option) => option === value,
+                );
+                if (seconds !== undefined)
+                  void save({ ...settings, countdownSeconds: seconds });
+              }}
+              itemToStringLabel={(value) => `${value} s`}
             >
-              {COUNTDOWN_OPTIONS.map((seconds) => (
-                <option key={seconds} value={seconds}>
-                  {seconds} s
-                </option>
-              ))}
-            </select>
+              <Select.Trigger
+                id="countdown"
+                data-slot="select-trigger"
+                className={triggerClassName}
+              >
+                <Select.Value />
+                <ChevronsUpDownIcon className="size-4 shrink-0 text-muted-foreground" />
+              </Select.Trigger>
+              <Select.Portal>
+                <Select.Positioner>
+                  <Select.Popup data-slot="select-popup">
+                    <Select.Surface>
+                      <Select.List>
+                        {COUNTDOWN_OPTIONS.map((seconds) => (
+                          <Select.Item key={seconds} value={seconds}>
+                            {seconds} s
+                            <Select.ItemIndicator />
+                          </Select.Item>
+                        ))}
+                      </Select.List>
+                    </Select.Surface>
+                  </Select.Popup>
+                </Select.Positioner>
+              </Select.Portal>
+            </Select.Root>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
