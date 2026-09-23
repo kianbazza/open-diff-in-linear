@@ -16,7 +16,12 @@ export function App({
 
   if (state.toast?.kind === "countdown")
     return (
-      <div className="odil-toast" role="status" aria-live="polite">
+      <div
+        className="odil-toast"
+        role="status"
+        aria-live="polite"
+        style={{ bottom: state.cornerBottom }}
+      >
         <div className="odil-toast-row">
           <span className="odil-toast-title">Opening in Linear…</span>
           <span className="odil-toast-hint">⌥ to stay</span>
@@ -36,7 +41,12 @@ export function App({
 
   if (state.toast?.kind === "notice")
     return (
-      <div className="odil-toast" role="status" aria-live="polite">
+      <div
+        className="odil-toast"
+        role="status"
+        aria-live="polite"
+        style={{ bottom: state.cornerBottom }}
+      >
         <div className="odil-toast-row">
           <span className="odil-toast-title">{state.toast.text}</span>
         </div>
@@ -51,6 +61,7 @@ export function App({
     <button
       type="button"
       className="odil-pill"
+      style={{ bottom: state.cornerBottom }}
       aria-label={label}
       title={label}
       onClick={(event) => {

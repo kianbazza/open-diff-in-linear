@@ -27,6 +27,8 @@ export interface PageState {
   flipHeld: boolean;
   /** The toast currently shown, or null when the floating pill is shown instead. */
   toast: CountdownToast | NoticeToast | null;
+  /** CSS `bottom` (px) for the pill and toasts; raised when another extension's widget occupies the corner. */
+  cornerBottom: number;
 }
 
 export interface PageStore {
@@ -43,6 +45,7 @@ export function createPageStore(initial: Partial<PageState> = {}): PageStore {
     settingsLoaded: false,
     flipHeld: false,
     toast: null,
+    cornerBottom: 16,
     ...initial,
   };
   const listeners = new Set<() => void>();
