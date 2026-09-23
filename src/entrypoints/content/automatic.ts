@@ -1,4 +1,5 @@
 import type { ContentScriptContext } from "#imports";
+import { takeArrivalSuppression } from "@/lib/arrival-suppression";
 import { arrivalKey, decideArrival } from "@/lib/automatic";
 import { isCancelled, markCancelled } from "@/lib/cancellation";
 import { sendMessage } from "@/lib/messages";
@@ -6,6 +7,7 @@ import { type PrPage, parsePrPage, prKey } from "@/lib/pr-page";
 import { GITHUB_TAB_ID } from "./github-tab";
 import { handoff } from "./handoff";
 import type { PageStore } from "./store";
+import { createTabCleanup } from "./tab-cleanup";
 
 export interface AutomaticMode {
   /** Cancel the running countdown (if any) and remember the cancellation for this PR in this tab. */
@@ -16,6 +18,9 @@ export function startAutomaticMode(
   ctx: ContentScriptContext,
   store: PageStore,
 ): AutomaticMode {
+  const cleanup = createTabCleanup(ctx);
+  /** Bumped by every cancel or manual handoff; a pending automatic handoff arms cleanup only if none happened since it fired. */
+  let cancelCount = 0;
   let countdownHandle: number | null = null;
   let lastArrivalKey: string | null = null;
   let waitingForVisible = false;
@@ -35,7 +40,20 @@ export function startAutomaticMode(
     countdownHandle = null;
     store.set({ toast: null });
     const target = store.get().settings.openTarget;
-    void handoff(page, target, "automatic");
+    const firedHref = window.location.href;
+    const firedCancelCount = cancelCount;
+    void handoff(page, target, "automatic", {
+      beforeOpen:
+        target === "desktop"
+          ? () => {
+              if (
+                window.location.href === firedHref &&
+                cancelCount === firedCancelCount
+              )
+                cleanup.arm();
+            }
+          : undefined,
+    });
   }
 
   function decide(page: PrPage) {
@@ -128,6 +146,7 @@ export function startAutomaticMode(
     const { page, settingsLoaded } = store.get();
     if (!settingsLoaded) return;
     if (page === null) {
+      takeArrivalSuppression();
       arrivalGeneration += 1;
       clearToast();
       lastArrivalKey = null;
@@ -141,6 +160,10 @@ export function startAutomaticMode(
     }
     arrivalGeneration += 1;
     lastArrivalKey = key;
+    if (takeArrivalSuppression()) {
+      clearToast();
+      return;
+    }
     void handleArrival(page);
   }
 
@@ -190,6 +213,8 @@ export function startAutomaticMode(
   }
 
   function cancel(): void {
+    cancelCount += 1;
+    cleanup.disarm();
     const toast = store.get().toast;
     if (toast?.kind === "countdown") {
       markCancelled(toast.prKey);

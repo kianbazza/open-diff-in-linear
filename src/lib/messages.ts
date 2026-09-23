@@ -4,18 +4,21 @@ export type Message =
   | { type: "mark-skip"; prKey: string }
   | { type: "consume-skip"; prKey: string }
   | { type: "record-handoff"; prKey: string }
-  | { type: "was-recently-handed-off"; prKey: string };
+  | { type: "was-recently-handed-off"; prKey: string }
+  | { type: "close-tab" };
 
 export interface MessageResponses {
   "mark-skip": undefined;
   "consume-skip": boolean;
   "record-handoff": undefined;
   "was-recently-handed-off": boolean;
+  "close-tab": undefined;
 }
 
 export function isMessage(value: unknown): value is Message {
   if (typeof value !== "object" || value === null) return false;
   const candidate = value as { type?: unknown; prKey?: unknown };
+  if (candidate.type === "close-tab") return true;
   return (
     typeof candidate.prKey === "string" &&
     (candidate.type === "mark-skip" ||

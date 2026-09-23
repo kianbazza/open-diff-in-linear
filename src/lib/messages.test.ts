@@ -17,6 +17,8 @@ describe("messages", () => {
     expect(isMessage({})).toBe(false);
     expect(isMessage({ type: "other", prKey: "x" })).toBe(false);
     expect(isMessage({ type: "mark-skip" })).toBe(false);
+    expect(isMessage({ type: "close-tab" })).toBe(true);
+    expect(isMessage({ type: "close-tab", prKey: "x" })).toBe(true);
   });
   it("uses fallback when background is unavailable", async () => {
     expect(

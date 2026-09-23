@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fakeBrowser } from "wxt/testing/fake-browser";
 import { handleMessage } from "./background-handlers";
 
@@ -30,5 +30,15 @@ describe("handleMessage", () => {
         7,
       ),
     ).toBe(true);
+  });
+  it("closes the sending tab", async () => {
+    const closeTab = vi.fn(async () => {});
+    await handleMessage({ type: "close-tab" }, 7, closeTab);
+    expect(closeTab).toHaveBeenCalledWith(7);
+  });
+  it("does not close when there is no sender tab", async () => {
+    const closeTab = vi.fn(async () => {});
+    await handleMessage({ type: "close-tab" }, undefined, closeTab);
+    expect(closeTab).not.toHaveBeenCalled();
   });
 });
