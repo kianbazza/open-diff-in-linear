@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 import { pillPresentation } from "@/lib/pill";
 import { handoff } from "./handoff";
+import { LinearLogo } from "./linear-logo";
 import type { PageStore } from "./store";
 
 export function App({
@@ -13,11 +14,13 @@ export function App({
   const state = useSyncExternalStore(store.subscribe, store.get, store.get);
   const page = state.page;
   if (page === null) return null;
+  const surface = state.pageTheme === "dark" ? "light" : "dark";
 
   if (state.toast?.kind === "countdown")
     return (
       <div
         className="odil-toast"
+        data-surface={surface}
         role="status"
         aria-live="polite"
         style={{ bottom: state.cornerBottom }}
@@ -43,6 +46,7 @@ export function App({
     return (
       <div
         className="odil-toast"
+        data-surface={surface}
         role="status"
         aria-live="polite"
         style={{ bottom: state.cornerBottom }}
@@ -61,6 +65,7 @@ export function App({
     <button
       type="button"
       className="odil-pill"
+      data-surface={surface}
       style={{ bottom: state.cornerBottom }}
       aria-label={label}
       title={label}
@@ -74,6 +79,7 @@ export function App({
         void handoff(page, target, "click");
       }}
     >
+      <LinearLogo className="odil-pill-logo" />
       {label}
     </button>
   );

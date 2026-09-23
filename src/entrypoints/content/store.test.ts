@@ -5,6 +5,7 @@ import { createPageStore } from "./store";
 describe("createPageStore", () => {
   it("starts with the default state", () => {
     expect(createPageStore().get()).toEqual({
+      pageTheme: "light",
       href: "",
       page: null,
       settings: DEFAULT_SETTINGS,
